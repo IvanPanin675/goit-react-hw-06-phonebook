@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './Form.module.css';
+import { addContact } from 'redux/contactsSlice/contactsSlice';
 
-const FormAddContact = ({ onHandleSubmit }) => {
+const FormAddContact = () => {
   const values = {
     name: '',
     number: '',
@@ -12,9 +13,29 @@ const FormAddContact = ({ onHandleSubmit }) => {
     return;
   };
 
+  const contacts = useSelector(store => store.contacts);
+  const dispatch = useDispatch();
+
   const cleanValues = e => {
     e.target.elements.name.value = '';
     e.target.elements.number.value = '';
+  };
+
+  const onHandleSubmit = data => {
+    const number = data.number;
+    const name = data.name;
+
+    if (contacts.find(contact => contact.name === name)) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+    if (contacts.find(contact => contact.number === number)) {
+      alert(`This number:${number} is already in contacts`);
+      return;
+    }
+
+    const contact = { name, number };
+    dispatch(addContact(contact));
   };
 
   return (
@@ -49,10 +70,6 @@ const FormAddContact = ({ onHandleSubmit }) => {
       </button>
     </form>
   );
-};
-
-FormAddContact.propTypes = {
-  onHandleSubmit: PropTypes.func.isRequired,
 };
 
 export default FormAddContact;
